@@ -1,4 +1,7 @@
-//Load The PDF
+//steps
+
+
+//step 1:Load The PDF
 import { PDFLoader } from '@langchain/community/document_loaders/fs/pdf';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { GoogleGenerativeAIEmbeddings } from '@langchain/google-genai';
@@ -17,7 +20,7 @@ async function indexDocument()
     
     //console.log(rawDocs.length);
 
-    //Chunking Here
+    //Step 2:Chunking Here
 
     
 const textSplitter = new RecursiveCharacterTextSplitter({
@@ -28,7 +31,7 @@ const chunkedDocs = await textSplitter.splitDocuments(rawDocs);
    // console.log(chunkedDocs);
     console.log("Chunking done");
     
-   //Vector Embedding
+   //Step 3:Vector Embedding
 
    const embeddings = new GoogleGenerativeAIEmbeddings({
     apiKey: process.env.GEMINI_API_KEY,
@@ -36,11 +39,11 @@ const chunkedDocs = await textSplitter.splitDocuments(rawDocs);
   });
 
   // Configure the Database 
-//Initialize Pinecone Client
+//Step 4:Initialize Pinecone Client
 const pinecone = new Pinecone();
 const pineconeIndex = pinecone.Index(process.env.PINECONE_INDEX_NAME);
 
-//Embed Chunks and Upload to Pinecone
+//Step 5:Embed Chunks and Upload to Pinecone
 await PineconeStore.fromDocuments(chunkedDocs, embeddings, {
     pineconeIndex,
     maxConcurrency: 5,
@@ -50,4 +53,5 @@ console.log("DATA Stored successfully");
 
 
 }
+
 indexDocument();
